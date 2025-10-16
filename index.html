@@ -10,7 +10,7 @@
 
 <body>
     <header>Rompecabezas</header>
-    <button id="btn-inicio">INICIAR</button>
+    <button id="btn-inicio" value="Start &#9658;" onclick="inicio();">INICIAR</button>
 
     <div class="div-tabla">
         <table>
@@ -32,6 +32,11 @@
         </table>
     </div>
     <div class="movimientos">Movimientos: 0</div>
+    <div id="contenedor">
+		<div class="reloj" id="Minutos">:00</div>
+		<div class="reloj" id="Segundos">:00</div>
+		<div class="reloj" id="Centesimas">:00</div>
+	</div>
     <script src="script.js"></script>
 
 </body>
