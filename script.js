@@ -2,25 +2,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnInicio = document.getElementById("btn-inicio");
     const tabla = document.querySelector("table");
     const divMovimientos = document.querySelector(".movimientos");
+    const divTiempo = document.getElementById("tiempo");
     let movimientos = 0;
+    let control; // para el cronómetro
 
     // Almacenar solución (las 8 imágenes en orden)
     const solucionImagenes = [];
     const imagenes = document.querySelectorAll("td img");
-    for (let i = 0; i < imagenes.length; i++) {
+    for (let i = 0; i < imagenes.length - 1; i++) {
         solucionImagenes.push(imagenes[i].src);
     }
 
-    // Posición del hueco
-    const hueco = document.querySelector(".hueco").closest("td");
-    const partes = hueco.id.split("-");
-    let huecoR = Number(partes[0]);
-    let huecoC = Number(partes[1]);
 
-    function getCasilla(r, c) {
-        return
-    }
+    // Posición inicial del hueco (fuera de la tabla para no poder intercambiar al inicio)
+    let huecoR = 10;
+    let huecoC = 10;
 
+
+    // Función: verifica si dos celdas son intercambiables
     // Comprueba si dos casillas son intercambiables (si está al lado el hueco)
     function intercambiables(r1, c1, r2, c2) {
         let intercambiable = false;
@@ -52,71 +51,61 @@ document.addEventListener("DOMContentLoaded", () => {
         return barajadas;
     };
 
-    var centesimas = 0;
-    var segundos = 0;
-    var minutos = 0;
+    // Variables del cronómetro
+    let centesimas = 0, segundos = 0, minutos = 0;
 
     function iniciarContador() {
-        control = setInterval(cronometro, 10);
-        document.getElementById("inicio").disabled = true;
-        document.getElementById("reinicio").disabled = false;
-    }
-    function pararContador() {
+        centesimas = 0; segundos = 0; minutos = 0;
+        actualizarTiempo();
         clearInterval(control);
-        document.getElementById("parar").disabled = true;
+        control = setInterval(cronometro, 10);
+        btnInicio.disabled = true;
     }
 
-    function reiniciarContador() {
+    function pararContador() {
         clearInterval(control);
-        centesimas = 0;
-        segundos = 0;
-        minutos = 0;
-        horas = 0;
-        Centesimas.innerHTML = ":00";
-        Segundos.innerHTML = ":00";
-        Minutos.innerHTML = ":00";
-        Horas.innerHTML = "00";
-        document.getElementById("inicio").disabled = false;
-        document.getElementById("parar").disabled = true;
-        document.getElementById("reinicio").disabled = true;
+        btnInicio.disabled = false;
     }
 
     function cronometro() {
-        if (centesimas < 99) {
-            centesimas++;
-            if (centesimas < 10) { centesimas = "0" + centesimas }
-            Centesimas.innerHTML = ":" + centesimas;
-        }
-        if (centesimas == 99) {
-            centesimas = -1;
-        }
-        if (centesimas == 0) {
+        centesimas++;
+        if (centesimas === 100) {
+            centesimas = 0;
             segundos++;
-            if (segundos < 10) { segundos = "0" + segundos }
-            Segundos.innerHTML = ":" + segundos;
         }
-        if (segundos == 59) {
-            segundos = -1;
-        }
-        if ((centesimas == 0) && (segundos == 0)) {
+        if (segundos === 60) {
+            segundos = 0;
             minutos++;
-            if (minutos < 10) { minutos = "0" + minutos }
-            Minutos.innerHTML = ":" + minutos;
         }
-        if (minutos == 59) {
-            minutos = -1;
-        }
+        actualizarTiempo();
     }
 
+    function actualizarTiempo() {
+        const formato =
+            `${minutos.toString().padStart(2, '0')}:` +
+            `${segundos.toString().padStart(2, '0')}:` +
+            `${centesimas.toString().padStart(2, '0')}`;
+        divTiempo.textContent = "Tiempo: " + formato;
+    }
 
     // Botón inicio
     btnInicio.addEventListener("click", () => {
         movimientos = 0;
-        iniciarContador();
         divMovimientos.textContent = "Movimientos: " + movimientos;
         const imgs = document.querySelectorAll("td img");
         const desordenar = barajar(solucionImagenes);
-        imgs.forEach((img, i) => (img.src = desordenar[i]));
+
+        for (let i = 0; i < desordenar.length; i++) {
+            imgs[i].src = desordenar[i];
+        }
+
+        // Sustituir la última imagen por el hueco
+        const ultimaCelda = document.getElementById("2-2");
+        ultimaCelda.innerHTML = '<p class="hueco"></p>';
+        huecoR = 2;
+        huecoC = 2;
+
+        iniciarContador();
     });
 
     // Click en la tabla
@@ -143,7 +132,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         if (resuelto) {
-            console.log("¡Has ganado!");
+            pararContador();
+            // Sustituir el hueco por la imagen de nuevo
+            const ultimaCelda = document.getElementById("2-2");
+            ultimaCelda.innerHTML = '<img src="images/dog/2_2.png" alt="2-2">';
+            huecoR = 10;
+            huecoC = 10;
         }
     });
 });
