@@ -3,8 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const tabla = document.querySelector("table");
     const divMovimientos = document.querySelector(".movimientos");
     const divTiempo = document.getElementById("tiempo");
+    const sortSelect = document.getElementById("sort-select");
+    const scoresBody = document.getElementById("scores-body");
     let movimientos = 0;
-    let control; // para el cronómetro
+    let control;
+    let scores = [];
 
     // Almacenar solución (las 8 imágenes en orden)
     const solucionImagenes = [];
@@ -13,12 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
         solucionImagenes.push(imagenes[i].src);
     }
 
-
+    
     // Posición inicial del hueco (fuera de la tabla para no poder intercambiar al inicio)
     let huecoR = 10;
     let huecoC = 10;
 
-
+    
     // Función: verifica si dos celdas son intercambiables
     // Comprueba si dos casillas son intercambiables (si está al lado el hueco)
     function intercambiables(r1, c1, r2, c2) {
@@ -80,18 +83,87 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarTiempo();
     }
 
+    function esResuelto() {
+        // El hueco debe estar en la esquina inferior derecha.
+        if (huecoR !== 2 || huecoC !== 2) return false;
+
+        for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+                const td = document.getElementById(`${r}-${c}`);
+                if (r === 2 && c === 2) {
+                    // Aquí NO debe haber imagen
+                    if (td.querySelector("img")) return false;
+                } else {
+                    const img = td.querySelector("img");
+                    if (!img) return false;
+                    // Esperamos .../r_c.png exactamente en esa celda
+                    if (!img.src.endsWith(`${r}_${c}.png`)) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
     function actualizarTiempo() {
-        const formato =
+        const tiempo =
             `${minutos.toString().padStart(2, '0')}:` +
             `${segundos.toString().padStart(2, '0')}:` +
             `${centesimas.toString().padStart(2, '0')}`;
-        divTiempo.textContent = "Tiempo: " + formato;
+        divTiempo.textContent = tiempo;
     }
 
-    // Botón inicio
+    function getTiempoEnSegundos() {
+        return minutos * 60 + segundos + centesimas / 100;
+    }
+
+    function agregarPuntuacion() {
+        const tiempoTotal = getTiempoEnSegundos();
+        const tiempoTexto = divTiempo.textContent;
+
+        scores.push({
+            tiempo: tiempoTotal,
+            tiempoTexto: tiempoTexto,
+            movimientos: movimientos
+        });
+
+        actualizarTabla();
+    }
+
+    function actualizarTabla() {
+        const criterio = sortSelect.value;
+
+        const scoresOrdenados = [...scores].sort((a, b) => {
+            if (criterio === 'tiempo') {
+                return a.tiempo - b.tiempo;
+            } else {
+                return a.movimientos - b.movimientos;
+            }
+        });
+
+        scoresBody.innerHTML = '';
+
+        if (scoresOrdenados.length === 0) {
+            scoresBody.innerHTML = '<tr><td colspan="3" class="no-scores">¡Completa el puzzle para aparecer aquí!</td></tr>';
+            return;
+        }
+
+        scoresOrdenados.forEach((score, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                        <td class="rank-cell">${index + 1}</td>
+                        <td>${score.tiempoTexto}</td>
+                        <td>${score.movimientos}</td>
+                    `;
+            scoresBody.appendChild(row);
+        });
+    }
+
+    sortSelect.addEventListener('change', actualizarTabla);
+
     btnInicio.addEventListener("click", () => {
         movimientos = 0;
-        divMovimientos.textContent = "Movimientos: " + movimientos;
+        divMovimientos.textContent = movimientos;
         const imgs = document.querySelectorAll("td img");
         const desordenar = barajar(solucionImagenes);
 
@@ -108,36 +180,33 @@ document.addEventListener("DOMContentLoaded", () => {
         iniciarContador();
     });
 
-    // Click en la tabla
     tabla.addEventListener("mousedown", (e) => {
         const td = e.target.closest("td");
+        if (!td) return;
+
         const partes = td.id.split("-");
         let r = Number(partes[0]);
         let c = Number(partes[1]);
         if (intercambiables(r, c, huecoR, huecoC)) {
             intercambiar(r, c, huecoR, huecoC);
             movimientos++;
-            divMovimientos.textContent = "Movimientos: " + movimientos;
+            divMovimientos.textContent = movimientos;
             huecoR = r; huecoC = c;
         }
+
         // Comprobar si ha ganado
-        let resuelto = false;
-        const imgs = document.querySelectorAll("td img");
-        for (let i = 0; i < imgs.length; i++) {
-            if (imgs[i].src !== solucionImagenes[i]) {
-                resuelto = false;
-                break;
-            } else {
-                resuelto = true;
-            }
-        }
-        if (resuelto) {
+        if (esResuelto()) {
             pararContador();
-            // Sustituir el hueco por la imagen de nuevo
-            const ultimaCelda = document.getElementById("2-2");
-            ultimaCelda.innerHTML = '<img src="images/dog/2_2.png" alt="2-2">';
-            huecoR = 10;
-            huecoC = 10;
+
+            // Colocar la última pieza para mostrar la imagen completa.
+            const celda = document.getElementById("2-2");
+            celda.innerHTML = "<img src='images/dog/2_2.png' alt='2-2'>";
+
+            // Deshabilitar el hueco
+            huecoR = 10; huecoC = 10;
+
+            // Guardar puntuación y notificar
+            agregarPuntuacion();
         }
     });
 });

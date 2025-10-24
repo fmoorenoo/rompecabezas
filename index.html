@@ -9,30 +9,74 @@
 </head>
 
 <body>
-    <header>Rompecabezas</header>
-    <button id="btn-inicio">INICIAR</button>
+    <div class="game-wrapper">
+        <div class="container">
+            <header>Rompecabezas</header>
 
-    <div class="div-tabla">
-        <table>
-            <tr>
-                <td id="0-0"><img src="images/dog/0_0.png" alt="0-0"></td>
-                <td id="0-1"><img src="images/dog/0_1.png" alt="0-1"></td>
-                <td id="0-2"><img src="images/dog/0_2.png" alt="0-2"></td>
-            </tr>
-            <tr>
-                <td id="1-0"><img src="images/dog/1_0.png" alt="1-0"></td>
-                <td id="1-1"><img src="images/dog/1_1.png" alt="1-1"></td>
-                <td id="1-2"><img src="images/dog/1_2.png" alt="1-2"></td>
-            </tr>
-            <tr>
-                <td id="2-0"><img src="images/dog/2_0.png" alt="2-0"></td>
-                <td id="2-1"><img src="images/dog/2_1.png" alt="2-1"></td>
-                <td id="2-2"><img src="images/dog/2_2.png" alt="2-2"></td>
-            </tr>
-        </table>
+            <div style="text-align: center;">
+                <button id="btn-inicio">Iniciar Juego</button>
+            </div>
+
+            <div class="div-tabla">
+                <table>
+                    <tr>
+                        <td id="0-0"><img src="images/dog/0_0.png" alt="0-0"></td>
+                        <td id="0-1"><img src="images/dog/0_1.png" alt="0-1"></td>
+                        <td id="0-2"><img src="images/dog/0_2.png" alt="0-2"></td>
+                    </tr>
+                    <tr>
+                        <td id="1-0"><img src="images/dog/1_0.png" alt="1-0"></td>
+                        <td id="1-1"><img src="images/dog/1_1.png" alt="1-1"></td>
+                        <td id="1-2"><img src="images/dog/1_2.png" alt="1-2"></td>
+                    </tr>
+                    <tr>
+                        <td id="2-0"><img src="images/dog/2_0.png" alt="2-0"></td>
+                        <td id="2-1"><img src="images/dog/2_1.png" alt="2-1"></td>
+                        <td id="2-2"><img src="images/dog/2_2.png" alt="2-2"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-label">Movimientos</div>
+                    <div class="stat-value movimientos">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Tiempo</div>
+                    <div class="stat-value" id="tiempo">00:00:00</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="leaderboard">
+            <h2>Mejores Puntuaciones</h2>
+
+            <div class="sort-controls">
+                <label for="sort-select">Ordenar por:</label>
+                <select id="sort-select">
+                    <option value="tiempo">Mejor Tiempo</option>
+                    <option value="movimientos">Menos Movimientos</option>
+                </select>
+            </div>
+
+            <table class="scores-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tiempo</th>
+                        <th>Movimientos</th>
+                    </tr>
+                </thead>
+                <tbody id="scores-body">
+                    <tr>
+                        <td colspan="3" class="no-scores">¡Completa el puzzle para aparecer aquí!</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
     </div>
-    <div class="movimientos">Movimientos: 0</div>
-    <div id="tiempo">Tiempo: 00:00:00</div>
     <script src="script.js"></script>
 </body>
 </html>
