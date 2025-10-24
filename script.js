@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const btnInicio = document.getElementById("btn-inicio");
+    const btnGuardar = document.getElementById("btn-guardar");
+    const btnCargar = document.getElementById("btn-cargar");
     const tabla = document.querySelector("table");
     const divMovimientos = document.querySelector(".movimientos");
     const divTiempo = document.getElementById("tiempo");
@@ -8,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let movimientos = 0;
     let control;
     let resultados = [];
+    let iniciado = false;
 
     // Almacenar solución (las 8 imágenes en orden)
     const solucionImagenes = [];
@@ -15,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < imagenes.length - 1; i++) {
         solucionImagenes.push(imagenes[i].src);
     }
-    
+
 
     // Posición inicial del hueco (fuera de la tabla para no poder intercambiar al inicio)
     let huecoR = 10;
@@ -37,10 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("marcadorPuzzle", JSON.stringify(resultados));
     }
 
-   
+
     // Función: verifica si dos celdas son intercambiables
-    // Comprueba si dos casillas son intercambiables (si está al lado el hueco)
     function intercambiables(r1, c1, r2, c2) {
+        if (r1 === r2 && c1 === c2) {
+            return false;
+        }
+
         let intercambiable = false;
         if (r1 === r2 && (c1 === c2 + 1 || c1 === c2 - 1)) {
             intercambiable = true;
@@ -70,6 +76,45 @@ document.addEventListener("DOMContentLoaded", () => {
         return barajadas;
     };
 
+    function ordenarRompecabezas() {
+        const celdas = [];
+        for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+                if (!(r === 2 && c === 2)) {
+                    celdas.push(document.getElementById(`${r}-${c}`));
+                }
+            }
+        }
+        for (let i = 0; i < celdas.length; i++) {
+            const src = solucionImagenes[i];
+            const alt = src.split("/").pop().replace(".png", "");
+            celdas[i].innerHTML = `<img src="${src}" alt="${alt}">`;
+        }
+    }
+
+
+    function reiniciarJuego() {
+        movimientos = 0;
+        divMovimientos.textContent = movimientos;
+        ordenarRompecabezas();
+
+        const ultimaCelda = document.getElementById("2-2");
+        ultimaCelda.innerHTML = '<p class="hueco"></p>';
+        huecoR = 2;
+        huecoC = 2;
+
+        const imgs = document.querySelectorAll("td img");
+        const desordenar = barajar(solucionImagenes);
+        for (let i = 0; i < imgs.length; i++) {
+            imgs[i].src = desordenar[i];
+            const nombre = desordenar[i].split("/").pop().replace(".png", "");
+            imgs[i].alt = nombre;
+        }
+
+        iniciarContador();
+    }
+
+
     // Cronómetro
     let centesimas = 0, segundos = 0, minutos = 0;
 
@@ -78,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarTiempo();
         clearInterval(control);
         control = setInterval(cronometro, 10);
-        btnInicio.disabled = true;
     }
 
     function pararContador() {
@@ -99,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarTiempo();
     }
 
-    function esResuelto() {
+    function resuelto() {
         if (huecoR !== 2 || huecoC !== 2) return false;
 
         for (let r = 0; r < 3; r++) {
@@ -109,7 +153,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (r === 2 && c === 2) {
                     if (img) return false;
                 } else {
-                    if (!img || img.alt !== `${r}_${c}`) return false;
+                    if (!img) return false;
+                    const nombre = img.getAttribute("alt");
+                    const esperado = `${r}_${c}`;
+                    if (nombre !== esperado) return false;
                 }
             }
         }
@@ -128,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return minutos * 60 + segundos + centesimas / 100;
     }
 
-    function agregarPuntuacion() {
+    function guardarPuntuacion() {
         const tiempoTotal = getTiempoEnSegundos();
         const tiempoTexto = divTiempo.textContent;
 
@@ -143,9 +190,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function actualizarTabla() {
-        const criterio = eleccion.value;
-        const resultadosOrdenados = [...resultados].sort((a, b) => {
-            if (criterio === 'tiempo') {
+        const filtro = eleccion.value;
+        const resultadosOrdenados = resultados.slice();
+
+        resultadosOrdenados.sort(function (a, b) {
+            if (filtro === 'tiempo') {
                 return a.tiempo - b.tiempo;
             } else {
                 return a.movimientos - b.movimientos;
@@ -154,44 +203,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
         datosTabla.innerHTML = '';
 
-        if (resultadosOrdenados.length === 0) {
-            datosTabla.innerHTML = '<tr><td colspan="3" class="vacio">No hay resultados</td></tr>';
-            return;
-        }
-
-        resultadosOrdenados.forEach((score, index) => {
+        for (let i = 0; i < resultadosOrdenados.length; i++) {
+            const score = resultadosOrdenados[i];
             const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="fila-marcador">${index + 1}</td>
-                <td>${score.tiempoTexto}</td>
-                <td>${score.movimientos}</td>
-            `;
+            row.innerHTML =
+                '<td>' + (i + 1) + '</td>' +
+                '<td>' + score.tiempoTexto + '</td>' +
+                '<td>' + score.movimientos + '</td>';
             datosTabla.appendChild(row);
-        });
+        }
     }
 
     eleccion.addEventListener('change', actualizarTabla);
 
     btnInicio.addEventListener("click", () => {
-        movimientos = 0;
-        divMovimientos.textContent = movimientos;
-        const imgs = document.querySelectorAll("td img");
-        const desordenar = barajar(solucionImagenes);
-
-        for (let i = 0; i < desordenar.length; i++) {
-            imgs[i].src = desordenar[i];
-
-            const nombre = desordenar[i].split("/").pop().replace(".png", "");
-            imgs[i].alt = nombre;
+        if (!iniciado) {
+            iniciado = true;
+            btnInicio.textContent = "Reiniciar";
         }
+        reiniciarJuego();
+    });
 
-        // Sustituir la última imagen por el hueco
-        const ultimaCelda = document.getElementById("2-2");
-        ultimaCelda.innerHTML = '<p class="hueco"></p>';
-        huecoR = 2;
-        huecoC = 2;
-
-        iniciarContador();
+    btnGuardar.addEventListener("click", () => {
+        // Guardar tiempo, movimientos, y posición actual de cada imagen.
+        localStorage.setItem("partidaGuardada", JSON.stringify());
     });
 
     tabla.addEventListener("mousedown", (e) => {
@@ -210,20 +245,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Comprobar si ha ganado
-        if (esResuelto()) {
+        if (resuelto()) {
             pararContador();
 
             // Colocar la última pieza para mostrar la imagen completa.
-            const celda = document.getElementById("2-2");
-            celda.innerHTML = "<img src='images/dog/2_2.png' alt='2-2'>";
+            const ultimaCelda = document.getElementById("2-2");
+            const img = document.createElement("img");
+            img.src = "images/dog/2_2.png";
+            img.alt = "2_2";
+            ultimaCelda.innerHTML = "";
+            ultimaCelda.appendChild(img);
 
-            // Deshabilitar el hueco
-            huecoR = 10; huecoC = 10;
+            btnInicio.textContent = "Iniciar";
 
             // Guardar puntuación
-            agregarPuntuacion();
+            guardarPuntuacion();
 
-            // Librería de JavaScript para simular 'confettis' al ganar
+            // Librería de JavaScript para simular confetis al ganar
             confetti({
                 particleCount: 150,
                 spread: 100,

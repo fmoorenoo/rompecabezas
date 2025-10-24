@@ -13,8 +13,10 @@
         <div class="rompecabezas">
             <header>Rompecabezas</header>
 
-            <div style="text-align: center;">
-                <button id="btn-inicio">Iniciar Juego</button>
+            <div id="botones">
+                <button id="btn-inicio">Iniciar</button>
+                <button id="btn-guardar">Guardar</button>
+                <button id="btn-cargar">Cargar</button>
             </div>
 
             <div class="div-tabla">
@@ -37,20 +39,20 @@
                 </table>
             </div>
 
-            <div class="stats-container">
-                <div class="stat-box">
-                    <div class="stat-label">Movimientos</div>
-                    <div class="stat-value movimientos">0</div>
+            <div class="estadisticas">
+                <div class="seccion-estadisticas">
+                    <div class="titulo-est">Movimientos</div>
+                    <div class="valor-est movimientos">0</div>
                 </div>
-                <div class="stat-box">
-                    <div class="stat-label">Tiempo</div>
-                    <div class="stat-value" id="tiempo">00:00:00</div>
+                <div class="seccion-estadisticas">
+                    <div class="titulo-est">Tiempo</div>
+                    <div class="valor-est" id="tiempo">00:00:00</div>
                 </div>
             </div>
         </div>
 
         <div class="marcador">
-            <h2>Mejores Puntuaciones</h2>
+            <h2>Puntuaciones</h2>
 
             <div class="orden">
                 <label for="eleccion">Ordenar por:</label>

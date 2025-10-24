@@ -39,7 +39,7 @@ header {
     letter-spacing: -1px;
 }
 
-#btn-inicio {
+#btn-inicio, #btn-cargar, #btn-guardar {
     padding: 14px 32px;
     font-weight: 700;
     font-size: 16px;
@@ -53,7 +53,15 @@ header {
     margin-bottom: 30px;
 }
 
-#btn-inicio:hover {
+#botones {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+#btn-inicio:hover, #btn-cargar:hover, #btn-guardar:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
@@ -90,17 +98,17 @@ img {
 img:hover {
     transform: scale(1.02);
     cursor: pointer;
-    border-color: #764ba2;
+    border-color: #b06df3;
 }
 
-.stats-container {
+.estadisticas {
     display: flex;
     justify-content: space-around;
     margin-top: 30px;
     gap: 20px;
 }
 
-.stat-box {
+.seccion-estadisticas {
     background: #667eea;
     padding: 15px 25px;
     border-radius: 12px;
@@ -112,7 +120,7 @@ img:hover {
     min-width: 150px;
 }
 
-.stat-label {
+.titulo-est {
     font-size: 12px;
     opacity: 0.9;
     margin-bottom: 5px;
@@ -120,9 +128,9 @@ img:hover {
     letter-spacing: 1px;
 }
 
-.stat-value {
+.valor-est {
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 /* Estilos del marcador */
