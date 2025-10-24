@@ -16,12 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
         solucionImagenes.push(imagenes[i].src);
     }
 
-    
+
     // Posición inicial del hueco (fuera de la tabla para no poder intercambiar al inicio)
     let huecoR = 10;
     let huecoC = 10;
 
-    
+
     // Función: verifica si dos celdas son intercambiables
     // Comprueba si dos casillas son intercambiables (si está al lado el hueco)
     function intercambiables(r1, c1, r2, c2) {
@@ -84,26 +84,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function esResuelto() {
-        // El hueco debe estar en la esquina inferior derecha.
         if (huecoR !== 2 || huecoC !== 2) return false;
 
         for (let r = 0; r < 3; r++) {
             for (let c = 0; c < 3; c++) {
                 const td = document.getElementById(`${r}-${c}`);
+                const img = td.querySelector("img");
                 if (r === 2 && c === 2) {
-                    // Aquí NO debe haber imagen
-                    if (td.querySelector("img")) return false;
+                    if (img) return false; 
                 } else {
-                    const img = td.querySelector("img");
-                    if (!img) return false;
-                    // Esperamos .../r_c.png exactamente en esa celda
-                    if (!img.src.endsWith(`${r}_${c}.png`)) return false;
+                    if (!img || img.alt !== `${r}_${c}`) return false;
                 }
             }
         }
         return true;
     }
-
 
     function actualizarTiempo() {
         const tiempo =
@@ -205,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Deshabilitar el hueco
             huecoR = 10; huecoC = 10;
 
-            // Guardar puntuación y notificar
+            // Guardar puntuación
             agregarPuntuacion();
         }
     });
