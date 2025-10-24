@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let control;
     let resultados = [];
     let iniciado = false;
+    btnGuardar.disabled = true;
 
     // Almacenar solución (las 8 imágenes en orden)
     const solucionImagenes = [];
@@ -39,6 +40,25 @@ document.addEventListener("DOMContentLoaded", () => {
     function guardarResultados() {
         localStorage.setItem("marcadorPuzzle", JSON.stringify(resultados));
     }
+
+    function actualizarBotonCargar() {
+        const raw = localStorage.getItem("partidaGuardada");
+        if (!raw) {
+            btnCargar.disabled = true;
+            return;
+        }
+
+        let estado;
+        try {
+            estado = JSON.parse(raw);
+        } catch {
+            btnCargar.disabled = true;
+            return;
+        }
+
+        btnCargar.disabled = false;
+    }
+
 
 
     // Función: verifica si dos celdas son intercambiables
@@ -112,6 +132,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         iniciarContador();
+    }
+
+    function mostrarImagenCompleta() {
+        for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+                const td = document.getElementById(`${r}-${c}`);
+                const src = `images/dog/${r}_${c}.png`;
+                td.innerHTML = `<img src="${src}" alt="${r}_${c}">`;
+            }
+        }
+        huecoR = 10;
+        huecoC = 10;
+
+        movimientos = 0;
+        divMovimientos.textContent = movimientos;
+        minutos = 0; segundos = 0; centesimas = 0;
+        actualizarTiempo();
+
+        clearInterval(control);
+        btnInicio.textContent = "Iniciar";
+        iniciado = false;
+        btnGuardar.disabled = true;
     }
 
 
@@ -221,13 +263,103 @@ document.addEventListener("DOMContentLoaded", () => {
             iniciado = true;
             btnInicio.textContent = "Reiniciar";
         }
+        btnGuardar.disabled = false;
         reiniciarJuego();
     });
 
     btnGuardar.addEventListener("click", () => {
-        // Guardar tiempo, movimientos, y posición actual de cada imagen.
-        localStorage.setItem("partidaGuardada", JSON.stringify());
+        clearInterval(control);
+
+        const celdas = [];
+        for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+                const td = document.getElementById(`${r}-${c}`);
+                const img = td.querySelector("img");
+                if (img) {
+                    celdas.push({
+                        r, c,
+                        src: img.getAttribute("src"),
+                        alt: img.getAttribute("alt")
+                    });
+                } else {
+                    celdas.push({ r, c, empty: true });
+                }
+            }
+        }
+
+        const estado = {
+            movimientos: movimientos,
+            tiempo: { minutos, segundos, centesimas },
+            hueco: { r: huecoR, c: huecoC },
+            celdas: celdas
+        };
+        localStorage.setItem("partidaGuardada", JSON.stringify(estado));
+        console.log("Partida guardada", estado);
+
+        mostrarImagenCompleta();
+        actualizarBotonCargar();
     });
+
+
+    btnCargar.addEventListener("click", () => {
+        const raw = localStorage.getItem("partidaGuardada");
+        if (!raw) {
+            console.warn("No hay partida guardada para cargar.");
+            return;
+        }
+
+        let estadoObj;
+        try {
+            estadoObj = JSON.parse(raw);
+        } catch (e) {
+            console.error("Partida corrupta en localStorage.", e);
+            return;
+        }
+
+        const celdas = estadoObj.celdas || [];
+        for (const celda of celdas) {
+            const td = document.getElementById(`${celda.r}-${celda.c}`);
+            if (celda.empty) {
+                td.innerHTML = '<p class="hueco"></p>';
+            } else {
+                const src = celda.src || (celda.alt ? `images/dog/${celda.alt}.png` : "");
+                const alt = celda.alt || (src ? src.split("/").pop().replace(".png", "") : "");
+                td.innerHTML = `<img src="${src}" alt="${alt}">`;
+            }
+        }
+
+        // Hueco
+        if (estadoObj.hueco) {
+            huecoR = Number(estadoObj.hueco.r);
+            huecoC = Number(estadoObj.hueco.c);
+        } else {
+            huecoR = 2; huecoC = 2;
+        }
+
+        // Movimientos
+        movimientos = Number(estadoObj.movimientos || 0);
+        divMovimientos.textContent = movimientos;
+
+        // Tiempo 
+        if (estadoObj.tiempo) {
+            minutos = Number(estadoObj.tiempo.minutos || 0);
+            segundos = Number(estadoObj.tiempo.segundos || 0);
+            centesimas = Number(estadoObj.tiempo.centesimas || 0);
+        } else {
+            minutos = segundos = centesimas = 0;
+        }
+
+        actualizarTiempo();
+
+        clearInterval(control);
+        control = setInterval(cronometro, 10);
+
+        if (!iniciado) iniciado = true;
+        btnInicio.textContent = "Reiniciar";
+        btnGuardar.disabled = false;
+        actualizarBotonCargar();
+    });
+
 
     tabla.addEventListener("mousedown", (e) => {
         const td = e.target.closest("td");
@@ -258,8 +390,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             btnInicio.textContent = "Iniciar";
 
+            huecoR = 10;
+            huecoC = 10;
+
             // Guardar puntuación
             guardarPuntuacion();
+
+            // Borrar partida guardada
+            localStorage.removeItem("partidaGuardada");
+            actualizarBotonCargar();
+            btnGuardar.disabled = true;
 
             // Librería de JavaScript para simular confetis al ganar
             confetti({
@@ -270,6 +410,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    actualizarBotonCargar();
     cargarResultados();
     actualizarTabla();
 });
