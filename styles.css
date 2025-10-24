@@ -14,13 +14,13 @@ body {
     padding: 20px;
 }
 
-.game-wrapper {
+.content {
     display: flex;
     gap: 30px;
     align-items: flex-start;
 }
 
-.container {
+.rompecabezas {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 24px;
     padding: 40px;
@@ -126,7 +126,7 @@ img:hover {
 }
 
 /* Estilos del marcador */
-.leaderboard {
+.marcador {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 24px;
     padding: 30px;
@@ -134,7 +134,7 @@ img:hover {
     width: 350px;
 }
 
-.leaderboard h2 {
+.marcador h2 {
     font-size: 28px;
     font-weight: 800;
     margin-bottom: 20px;
@@ -145,18 +145,18 @@ img:hover {
     text-align: center;
 }
 
-.sort-controls {
+.orden {
     margin-bottom: 20px;
     text-align: center;
 }
 
-.sort-controls label {
+.orden label {
     font-weight: 600;
     color: #667eea;
     margin-right: 10px;
 }
 
-.sort-controls select {
+.orden select {
     padding: 8px 15px;
     border-radius: 8px;
     border: 2px solid #667eea;
@@ -167,21 +167,21 @@ img:hover {
     transition: all 0.3s ease;
 }
 
-.sort-controls select:hover {
+.orden select:hover {
     background: #f5f7fa;
 }
 
-.scores-table {
+.tabla-puntuacion {
     width: 100%;
     border-collapse: collapse;
 }
 
-.scores-table thead {
+.tabla-puntuacion thead {
     background: #667eea;
     color: white;
 }
 
-.scores-table th {
+.tabla-puntuacion th {
     padding: 12px 8px;
     font-size: 12px;
     text-transform: uppercase;
@@ -189,30 +189,29 @@ img:hover {
     font-weight: 700;
 }
 
-.scores-table tbody tr {
+.tabla-puntuacion tbody tr {
     border-bottom: 1px solid #e0e0e0;
     transition: background 0.2s ease;
 }
 
-.scores-table tbody tr:hover {
-    background: #f5f7fa;
+.tabla-puntuacion tbody tr:hover {
+    background: #f1f1f1;
 }
 
-.scores-table td {
+.tabla-puntuacion td {
     padding: 12px 8px;
     text-align: center;
     font-weight: 600;
     color: #333;
 }
 
-.rank-cell {
+.fila-marcador {
     font-weight: 800;
     color: #667eea;
 }
 
-.no-scores {
+.vacio {
     text-align: center;
     padding: 30px;
     color: #999;
-    font-style: italic;
 }

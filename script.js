@@ -3,8 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const tabla = document.querySelector("table");
     const divMovimientos = document.querySelector(".movimientos");
     const divTiempo = document.getElementById("tiempo");
-    const sortSelect = document.getElementById("sort-select");
-    const scoresBody = document.getElementById("scores-body");
+    const eleccion = document.getElementById("eleccion");
+    const datosTabla = document.getElementById("datos-tabla");
     let movimientos = 0;
     let control;
     let scores = [];
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const td = document.getElementById(`${r}-${c}`);
                 const img = td.querySelector("img");
                 if (r === 2 && c === 2) {
-                    if (img) return false; 
+                    if (img) return false;
                 } else {
                     if (!img || img.alt !== `${r}_${c}`) return false;
                 }
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function actualizarTabla() {
-        const criterio = sortSelect.value;
+        const criterio = eleccion.value;
 
         const scoresOrdenados = [...scores].sort((a, b) => {
             if (criterio === 'tiempo') {
@@ -136,25 +136,25 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        scoresBody.innerHTML = '';
+        datosTabla.innerHTML = '';
 
         if (scoresOrdenados.length === 0) {
-            scoresBody.innerHTML = '<tr><td colspan="3" class="no-scores">¡Completa el puzzle para aparecer aquí!</td></tr>';
+            datosTabla.innerHTML = '<tr><td colspan="3" class="vacio">No hay resultados</td></tr>';
             return;
         }
 
         scoresOrdenados.forEach((score, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                        <td class="rank-cell">${index + 1}</td>
+                        <td class="fila-marcador">${index + 1}</td>
                         <td>${score.tiempoTexto}</td>
                         <td>${score.movimientos}</td>
                     `;
-            scoresBody.appendChild(row);
+            datosTabla.appendChild(row);
         });
     }
 
-    sortSelect.addEventListener('change', actualizarTabla);
+    eleccion.addEventListener('change', actualizarTabla);
 
     btnInicio.addEventListener("click", () => {
         movimientos = 0;
@@ -164,6 +164,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         for (let i = 0; i < desordenar.length; i++) {
             imgs[i].src = desordenar[i];
+
+            const nombre = desordenar[i].split("/").pop().replace(".png", ""); // "r_c"
+            imgs[i].alt = nombre;
         }
 
         // Sustituir la última imagen por el hueco
@@ -202,6 +205,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Guardar puntuación
             agregarPuntuacion();
+
+            // Librería de JavaScript para simular 'confettis' al ganar
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 }
+            });
         }
     });
 });
