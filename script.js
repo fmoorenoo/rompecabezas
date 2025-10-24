@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const datosTabla = document.getElementById("datos-tabla");
     let movimientos = 0;
     let control;
-    let scores = [];
+    let resultados = [];
 
     // Almacenar solución (las 8 imágenes en orden)
     const solucionImagenes = [];
@@ -15,13 +15,29 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < imagenes.length - 1; i++) {
         solucionImagenes.push(imagenes[i].src);
     }
-
+    
 
     // Posición inicial del hueco (fuera de la tabla para no poder intercambiar al inicio)
     let huecoR = 10;
     let huecoC = 10;
 
+    // Cargar y guardar puntuaciones con localStorage
+    function cargarResultados() {
+        const guardado = localStorage.getItem("marcadorPuzzle");
+        if (guardado) {
+            try {
+                resultados = JSON.parse(guardado);
+            } catch {
+                resultados = [];
+            }
+        }
+    }
 
+    function guardarResultados() {
+        localStorage.setItem("marcadorPuzzle", JSON.stringify(resultados));
+    }
+
+   
     // Función: verifica si dos celdas son intercambiables
     // Comprueba si dos casillas son intercambiables (si está al lado el hueco)
     function intercambiables(r1, c1, r2, c2) {
@@ -54,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return barajadas;
     };
 
-    // Variables del cronómetro
+    // Cronómetro
     let centesimas = 0, segundos = 0, minutos = 0;
 
     function iniciarContador() {
@@ -116,19 +132,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const tiempoTotal = getTiempoEnSegundos();
         const tiempoTexto = divTiempo.textContent;
 
-        scores.push({
+        resultados.push({
             tiempo: tiempoTotal,
             tiempoTexto: tiempoTexto,
             movimientos: movimientos
         });
 
+        guardarResultados();
         actualizarTabla();
     }
 
     function actualizarTabla() {
         const criterio = eleccion.value;
-
-        const scoresOrdenados = [...scores].sort((a, b) => {
+        const resultadosOrdenados = [...resultados].sort((a, b) => {
             if (criterio === 'tiempo') {
                 return a.tiempo - b.tiempo;
             } else {
@@ -138,18 +154,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         datosTabla.innerHTML = '';
 
-        if (scoresOrdenados.length === 0) {
+        if (resultadosOrdenados.length === 0) {
             datosTabla.innerHTML = '<tr><td colspan="3" class="vacio">No hay resultados</td></tr>';
             return;
         }
 
-        scoresOrdenados.forEach((score, index) => {
+        resultadosOrdenados.forEach((score, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                        <td class="fila-marcador">${index + 1}</td>
-                        <td>${score.tiempoTexto}</td>
-                        <td>${score.movimientos}</td>
-                    `;
+                <td class="fila-marcador">${index + 1}</td>
+                <td>${score.tiempoTexto}</td>
+                <td>${score.movimientos}</td>
+            `;
             datosTabla.appendChild(row);
         });
     }
@@ -165,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < desordenar.length; i++) {
             imgs[i].src = desordenar[i];
 
-            const nombre = desordenar[i].split("/").pop().replace(".png", ""); // "r_c"
+            const nombre = desordenar[i].split("/").pop().replace(".png", "");
             imgs[i].alt = nombre;
         }
 
@@ -189,7 +205,8 @@ document.addEventListener("DOMContentLoaded", () => {
             intercambiar(r, c, huecoR, huecoC);
             movimientos++;
             divMovimientos.textContent = movimientos;
-            huecoR = r; huecoC = c;
+            huecoR = r;
+            huecoC = c;
         }
 
         // Comprobar si ha ganado
@@ -214,4 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
+
+    cargarResultados();
+    actualizarTabla();
 });
