@@ -9,7 +9,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #dcd5e2 100%);
+    background: linear-gradient(135deg, #8e9fe2 0%, #808080 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 20px;
 }
@@ -21,7 +21,7 @@ body {
 }
 
 .rompecabezas {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(248, 248, 248, 0.95);
     border-radius: 24px;
     padding: 40px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -31,12 +31,8 @@ header {
     font-size: 48px;
     font-weight: 800;
     margin-bottom: 30px;
-    background: #667eea;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #667eea;
     text-align: center;
-    letter-spacing: -1px;
 }
 
 #btn-inicio, #btn-cargar, #btn-guardar {
@@ -74,7 +70,7 @@ header {
     display: flex;
     justify-content: center;
     padding: 30px;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, #f5f7fa 0%, #d8e6ff 100%);
     border-radius: 16px;
     width: fit-content;
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -125,10 +121,9 @@ img:hover {
 }
 
 .titulo-est {
-    font-size: 12px;
+    font-size: 13px;
     opacity: 0.9;
     margin-bottom: 5px;
-    text-transform: uppercase;
     letter-spacing: 1px;
 }
 
@@ -138,7 +133,7 @@ img:hover {
 }
 
 .marcador {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(248, 248, 248, 0.95);
     border-radius: 24px;
     padding: 30px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -149,37 +144,8 @@ img:hover {
     font-size: 28px;
     font-weight: 800;
     margin-bottom: 20px;
-    background: #667eea;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-align: center;
-}
-
-.orden {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.orden label {
-    font-weight: 600;
     color: #667eea;
-    margin-right: 10px;
-}
-
-.orden select {
-    padding: 8px 15px;
-    border-radius: 8px;
-    border: 2px solid #667eea;
-    background: white;
-    color: #667eea;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.orden select:hover {
-    background: #f5f7fa;
+    text-align: center;
 }
 
 .tabla-puntuacion {
@@ -195,7 +161,6 @@ img:hover {
 .tabla-puntuacion th {
     padding: 12px 8px;
     font-size: 12px;
-    text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 700;
 }
@@ -214,6 +179,11 @@ img:hover {
     text-align: center;
     font-weight: 600;
     color: #333;
+}
+
+.ultimo-resultado {
+    background-color: #fff1b9; 
+    font-weight: bold; 
 }
 
 .fila-marcador {
