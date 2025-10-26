@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
             this.divMovimientos = document.querySelector(".movimientos");
             this.divTiempo = document.getElementById("tiempo");
             this.datosTabla = document.getElementById("datos-tabla");
+            this.boxVictoria = document.getElementById("victoria");
+            this.msgVictoria = document.getElementById("msg-victoria");
 
             // Estados iniciales
             this.movimientos = 0;
@@ -164,6 +166,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     localStorage.setItem("marcadorPuzzle", JSON.stringify(this.resultados));
                     this.actualizarTabla();
 
+                    if (this.boxVictoria && this.msgVictoria) {
+                        this.msgVictoria.textContent = `¡Has ganado! Tiempo: ${this.divTiempo.textContent} Movimientos: ${this.movimientos}`;
+                        this.boxVictoria.style.display = "block";
+                    }
+
                     // Borrar partida guardada al ganar
                     localStorage.removeItem("partidaGuardada");
                     this.actualizarBotonCargar();
@@ -221,13 +228,35 @@ document.addEventListener("DOMContentLoaded", () => {
             return true;
         }
 
+        contarInversiones(listaSrc) {
+            let inversiones = 0;
+            for (let i = 0; i < listaSrc.length; i++) {
+                // Obtener fila y columna (ej: images/0_2.png -> r=0; c=2)
+                const partesI = listaSrc[i].split('/')
+                const nombreI = partesI[partesI.length - 1].replace(".png", "");
+                const [rI, cI] = nombreI.split('_').map(Number);
+                const idxI = rI * 3 + cI; // Índice en una lista simple (ej: r=0; c=2 -> 0*3 + 2 = posición 2)
+
+                for (let j = i + 1; j < listaSrc.length; j++) {
+                    const partesJ = listaSrc[j].split('/')
+                    const nombreJ = partesJ[partesJ.length - 1].replace(".png", "");
+                    const [rJ, cJ] = nombreJ.split('_').map(Number);
+                    const idxJ = rJ * 3 + cJ;
+
+                    if (idxI > idxJ) inversiones++;
+                }
+            }
+            return inversiones;
+        }
+
         barajar(imagenes) {
             const barajadas = imagenes.slice();
             for (let i = barajadas.length - 1; i > 0; i--) {
-                // Elige una posición aleatoria en la lista de imágenes
                 const j = Math.floor(Math.random() * (i + 1));
-                // Intercambia la imagen actual con la elegida al azar
                 [barajadas[i], barajadas[j]] = [barajadas[j], barajadas[i]];
+            }
+            if (this.contarInversiones(barajadas) % 2 === 1) {
+                [barajadas[0], barajadas[1]] = [barajadas[1], barajadas[0]];
             }
             return barajadas;
         };
@@ -253,6 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Iniciar / reiniciar partida
         reiniciarJuego() {
+            if (this.boxVictoria) this.boxVictoria.style.display = "none";
             this.movimientos = 0;
             this.divMovimientos.textContent = this.movimientos;
             this.ordenarRompecabezas();
@@ -265,7 +295,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const desordenar = this.barajar(this.solucionImagenes);
             for (let i = 0; i < imgs.length; i++) {
                 imgs[i].src = desordenar[i];
-                const nombre = desordenar[i].split("/").pop().replace(".png", "");
+                const partes = desordenar[i].split("/");
+                const nombre = partes[partes.length - 1].replace(".png", "");
                 imgs[i].alt = nombre;
             }
 
@@ -366,10 +397,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const resultadosOrdenados = this.resultados.slice().sort((a, b) => a.tiempo - b.tiempo);
+            const top10 = resultadosOrdenados.slice(0, 10);
             const ultimo = this.resultados[this.resultados.length - 1];
 
-            for (let i = 0; i < resultadosOrdenados.length; i++) {
-                const score = resultadosOrdenados[i];
+            for (let i = 0; i < top10.length; i++) {
+                const score = top10[i];
                 const fila = document.createElement('tr');
                 if (score === ultimo) fila.classList.add('ultimo-resultado');
                 fila.innerHTML = `
@@ -379,7 +411,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 tbody.appendChild(fila);
             }
         }
-
     }
 
     // Crear objeto de rompecabezas
