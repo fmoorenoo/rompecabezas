@@ -132,20 +132,16 @@ document.addEventListener("DOMContentLoaded", () => {
             divMovimientos.textContent = "Movimientos: " + movimientos;
             huecoR = r; huecoC = c;
         }
-        // Comprobar si ha ganado
-        let resuelto = false;
-        const imgs = document.querySelectorAll("td img");
-        for (let i = 0; i < imgs.length; i++) {
-            if (imgs[i].src !== solucionImagenes[i]) {
-                resuelto = false;
-                break;
-            } else {
-                resuelto = true;
-            }
-        }
+        // La victoria exige que las ocho piezas estén en su sitio y el hueco al final.
+        const resuelto = huecoR === 2 && huecoC === 2 &&
+            solucionImagenes.every((imagen, indice) => {
+                const celda = document.getElementById(Math.floor(indice / 3) + "-" + (indice % 3));
+                const pieza = celda.querySelector("img");
+                return pieza !== null && pieza.src === imagen;
+            });
+
         if (resuelto) {
             pararContador();
-            // Sustituir el hueco por la imagen de nuevo
             const ultimaCelda = document.getElementById("2-2");
             ultimaCelda.innerHTML = '<img src="images/dog/2_2.png" alt="2-2">';
             huecoR = 10;
