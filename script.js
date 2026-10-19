@@ -123,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Click en la tabla
     tabla.addEventListener("mousedown", (e) => {
         const td = e.target.closest("td");
+        if (!td) return;
         const partes = td.id.split("-");
         let r = Number(partes[0]);
         let c = Number(partes[1]);
