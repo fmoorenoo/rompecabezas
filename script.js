@@ -41,14 +41,30 @@ document.addEventListener("DOMContentLoaded", () => {
         B.innerHTML = tmp;
     };
 
-    // Baraja las imágenes
+    // Genera una partida resoluble mediante movimientos válidos desde el tablero ordenado.
     function barajar(imagenes) {
-        const barajadas = imagenes.slice();
-        for (let i = barajadas.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [barajadas[i], barajadas[j]] = [barajadas[j], barajadas[i]];
+        const casillas = [...imagenes, null];
+        let hueco = 8;
+        let posicionAnterior = -1;
+
+        for (let paso = 0; paso < 100; paso++) {
+            const fila = Math.floor(hueco / 3);
+            const columna = hueco % 3;
+            const vecinos = [];
+            if (fila > 0) vecinos.push(hueco - 3);
+            if (fila < 2) vecinos.push(hueco + 3);
+            if (columna > 0) vecinos.push(hueco - 1);
+            if (columna < 2) vecinos.push(hueco + 1);
+
+            // Evita deshacer inmediatamente el movimiento anterior.
+            const candidatos = vecinos.filter(posicion => posicion !== posicionAnterior);
+            const siguiente = candidatos[Math.floor(Math.random() * candidatos.length)];
+            [casillas[hueco], casillas[siguiente]] = [casillas[siguiente], casillas[hueco]];
+            posicionAnterior = hueco;
+            hueco = siguiente;
         }
-        return barajadas;
+
+        return casillas;
     };
 
     // Variables del cronómetro
@@ -92,18 +108,14 @@ document.addEventListener("DOMContentLoaded", () => {
     btnInicio.addEventListener("click", () => {
         movimientos = 0;
         divMovimientos.textContent = "Movimientos: " + movimientos;
-        const imgs = document.querySelectorAll("td img");
         const desordenar = barajar(solucionImagenes);
-
-        for (let i = 0; i < desordenar.length; i++) {
-            imgs[i].src = desordenar[i];
-        }
-
-        // Sustituir la última imagen por el hueco
-        const ultimaCelda = document.getElementById("2-2");
-        ultimaCelda.innerHTML = '<p class="hueco"></p>';
-        huecoR = 2;
-        huecoC = 2;
+        desordenar.forEach((imagen, posicion) => {
+            const celda = document.getElementById(Math.floor(posicion / 3) + "-" + (posicion % 3));
+            celda.innerHTML = imagen ? '<img src="' + imagen + '" alt="Pieza del rompecabezas">' : '<p class="hueco"></p>';
+        });
+        const indiceHueco = desordenar.indexOf(null);
+        huecoR = Math.floor(indiceHueco / 3);
+        huecoC = indiceHueco % 3;
 
         iniciarContador();
     });
