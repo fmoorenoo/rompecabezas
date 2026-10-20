@@ -34,8 +34,6 @@ El juego está desarrollado con **HTML5, CSS3 y JavaScript puro**, sin framework
 - **Cronómetro:** muestra minutos, segundos y centésimas.
 - **Comprobación de resultado:** lógica para detectar la disposición de las piezas y detener el cronómetro.
 
-> Las funcionalidades proceden del código fuente. No se ha ejecutado una prueba completa de jugabilidad durante esta revisión.
-
 ## Tecnologías
 
 | Área | Tecnologías |
@@ -73,46 +71,24 @@ La imagen original está dividida en ocho piezas móviles y la posición final c
 ## Vista del proyecto
 
 <div align="center">
-  <img src="images/dog/0_0.png" alt="Fragmento de la imagen utilizada en el rompecabezas" width="130">
-  <img src="images/dog/0_1.png" alt="Segundo fragmento de la imagen utilizada en el juego" width="130">
-  <img src="images/dog/0_2.png" alt="Tercer fragmento de la imagen utilizada en el juego" width="130">
-  <p><sub>Fragmentos gráficos del juego; no son una captura del tablero completo.</sub></p>
+  <img src="images/dog/1_0.png" alt="Fragmento de la imagen utilizada en el rompecabezas" width="130">
+  <img src="images/dog/1_1.png" alt="Segundo fragmento de la imagen utilizada en el juego" width="130">
+  <img src="images/dog/1_2.png" alt="Tercer fragmento de la imagen utilizada en el juego" width="130">
+  <p><sub>3 de los 9 fragmentos gráficos del juego.</sub></p>
 </div>
 
 No se ha encontrado una captura de pantalla completa en el repositorio. Se puede incorporar más adelante para mostrar el diseño real de la interfaz.
 
-## Instalación y ejecución
-
-1. Clona el repositorio:
-
-   ```bash
-   git clone https://github.com/fmoorenoo/rompecabezas.git
-   cd rompecabezas
-   ```
-
-2. Abre `index.html` en un navegador moderno.
-
-Opcionalmente, puedes iniciar un servidor local:
-
-```bash
-python -m http.server 8000
-```
-
-Después visita `http://localhost:8000/`.
-
-No es necesario instalar dependencias mediante npm.
 
 ## Estado del proyecto
 
 **Proyecto de práctica frontend.** El código implementa las reglas básicas de desplazamiento, la cuenta de movimientos y el cronómetro.
 
-### Limitaciones detectadas durante la revisión estática
+### Limitaciones
 
-- **Partidas potencialmente irresolubles:** el algoritmo de mezcla utiliza un barajado aleatorio de las ocho piezas sin comprobar la paridad de la permutación. Algunas configuraciones iniciales pueden no tener solución mediante movimientos válidos.
-- **Validación de victoria:** el código compara las imágenes presentes en el DOM sin validar explícitamente la posición del hueco; conviene revisar la lógica para detectar correctamente una partida completada.
+- **Partidas irresolubles:** el algoritmo de mezcla utiliza un barajado aleatorio de las ocho piezas sin comprobar la paridad de la permutación. Algunas configuraciones iniciales pueden no tener solución mediante movimientos válidos.
+- **Validación de victoria:** el código compara las imágenes presentes en el DOM sin validar explícitamente la posición del hueco.
 - **Interacción:** la entrada se gestiona mediante `mousedown`; el soporte táctil y la accesibilidad por teclado requieren revisión.
-
-Estas observaciones se documentan sin modificar el comportamiento original del juego.
 
 ## Autor
 
@@ -122,7 +98,3 @@ Estas observaciones se documentan sin modificar el comportamiento original del j
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Perfil_profesional-712B39?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/fernando-montelongo/)
 
 ---
-
-<div align="center">
-  <sub>Rompecabezas · Juego de lógica para navegador desarrollado con JavaScript</sub>
-</div>
